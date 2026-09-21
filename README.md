@@ -11,13 +11,13 @@ before agreeing to ship it. No dependencies: Foundation and SwiftUI, iOS 16+.
 In Xcode: **File → Add Package Dependencies…**, and
 
 ```
-https://github.com/mjhere/tester-channel-ios
+https://github.com/mjhere/1000-fans-ios
 ```
 
 or in a `Package.swift` of your own:
 
 ```swift
-.package(url: "https://github.com/mjhere/tester-channel-ios", .upToNextMinor(from: "0.1.1"))
+.package(url: "https://github.com/mjhere/1000-fans-ios", .upToNextMinor(from: "0.1.1"))
 ```
 
 **`upToNextMinor` rather than Xcode's default while this is a 0.x release.**

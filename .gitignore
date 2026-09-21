@@ -1,7 +1,7 @@
 # Xcode and SwiftPM leave these behind, per user and per machine.
 #
 # Here rather than in the root .gitignore because this directory is copied
-# wholesale into mjhere/tester-channel-ios, which needs the same rules and
+# wholesale into mjhere/1000-fans-ios, which needs the same rules and
 # cannot see ours. One file, both repositories — see .github/workflows/sync-ios-sdk.yml.
 xcuserdata/
 .swiftpm/
