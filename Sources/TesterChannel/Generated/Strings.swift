@@ -20,7 +20,7 @@ import Foundation
 /// key. `welcome` is the one real absence — the service renders that one and
 /// stores it as an ordinary message, so no client has a use for it.
 ///
-/// Nothing here names Tester Channel — D16 — in any language, and
+/// Nothing here names 1000 Fans — D16 — in any language, and
 /// test/strings.test.ts checks that rather than trusting it.
 public struct PanelStrings: Equatable, Sendable {
     public var subtitle = "Beta programme"

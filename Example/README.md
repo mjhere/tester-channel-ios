@@ -1,6 +1,6 @@
 # TesterChannelDemo
 
-A host app with the Tester Channel panel in it, for trying the iOS client on a
+A host app with the 1000 Fans panel in it, for trying the iOS client on a
 simulator. It talks to a fake service inside the app (`FakeService.swift`), so
 it needs no server, database, network or signing.
 

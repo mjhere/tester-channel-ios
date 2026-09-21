@@ -1,4 +1,4 @@
-# Tester Channel — iOS client
+# 1000 Fans — iOS client
 
 One private conversation between a company and each of its testers, as a SwiftUI
 view you drop into a screen you already have.
@@ -40,7 +40,7 @@ any tester of your app.
    your own session, that returns `HMAC-SHA256(userId, hmacSecret)` in hex for
    *the logged-in user*. Never for a user id that arrived in the request.
 2. **Your app** asks that endpoint for the hash and hands both to `identify`.
-3. **Tester Channel** verifies the pair and returns a session.
+3. **1000 Fans** verifies the pair and returns a session.
 
 `userId` must be your own immutable internal id — never an email address. An
 address changes, and this id is what a tester's entire history hangs off: change

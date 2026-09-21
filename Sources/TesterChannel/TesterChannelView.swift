@@ -15,7 +15,7 @@ import UIKit
 ///     .frame(height: 520)
 /// ```
 ///
-/// D16: nothing here identifies Tester Channel. The panel wears the host's name
+/// D16: nothing here identifies 1000 Fans. The panel wears the host's name
 /// and colours, and a tester should experience it as part of the app they were
 /// already using.
 @MainActor

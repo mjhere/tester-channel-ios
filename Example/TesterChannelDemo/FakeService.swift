@@ -3,7 +3,7 @@ import Foundation
 import UIKit
 #endif
 
-/// A Tester Channel service that lives inside this app.
+/// A 1000 Fans service that lives inside this app.
 ///
 /// It answers the same `/v1/client/*` routes as `src/routes/client.ts`, with the
 /// same JSON, from memory. That is enough to drive every state the panel has —

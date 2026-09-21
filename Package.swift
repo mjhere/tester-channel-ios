@@ -1,7 +1,7 @@
 // swift-tools-version: 5.9
 import PackageDescription
 
-/// Tester Channel — iOS client.
+/// 1000 Fans — iOS client.
 ///
 /// D15: open source, like the web client, because this is the file a customer's
 /// mobile team reads before they agree to ship it.

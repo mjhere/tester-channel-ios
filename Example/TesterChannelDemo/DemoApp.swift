@@ -143,7 +143,7 @@ struct HostHome: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
-            Section("Tester Channel") {
+            Section("1000 Fans") {
                 LabeledContent("Unread", value: "\(client.unreadCount)")
                 LabeledContent("Tester", value: client.displayName ?? "not named yet")
                 LabeledContent("Network", value: demo.offline ? "offline" : "online")
