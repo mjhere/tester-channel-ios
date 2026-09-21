@@ -8,15 +8,28 @@ before agreeing to ship it. No dependencies: Foundation and SwiftUI, iOS 16+.
 
 ## Install
 
-Either point Swift Package Manager at this directory:
+In Xcode: **File → Add Package Dependencies…**, and
 
-```swift
-.package(path: "../sdk/ios")            // or a URL, once this repo is somewhere
+```
+https://github.com/mjhere/tester-channel-ios
 ```
 
-…or drag `Sources/TesterChannel/` into your target. It is seven files and there
-is nothing clever in the build: `Generated/Strings.swift` is checked in rather
-than produced by an SPM plugin, so what you compile is what you can read.
+or in a `Package.swift` of your own:
+
+```swift
+.package(url: "https://github.com/mjhere/tester-channel-ios", .upToNextMinor(from: "0.1.0"))
+```
+
+**`upToNextMinor` rather than Xcode's default while this is a 0.x release.**
+Swift Package Manager reads *up to next major* from `0.1.0` as anything below
+`1.0.0` — it does not stop at `0.2.0` the way npm's `^` and Cargo do — and `0.x`
+is exactly the range in which the surface may still change. Once this reaches
+`1.0.0` the default rule is the right one.
+
+…or drag `Sources/TesterChannel/` into your target and hold your own copy. It is
+Apache-2.0, so that is a supported way to take it rather than a workaround. Seven
+files and nothing clever in the build: `Generated/Strings.swift` is checked in
+rather than produced by an SPM plugin, so what you compile is what you can read.
 
 ## The three parties
 
