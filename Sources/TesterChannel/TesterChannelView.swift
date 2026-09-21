@@ -34,6 +34,9 @@ public struct TesterChannelView: View {
     /// Set by Send, spent by the next change at the bottom of the thread.
     @State private var followOwn = false
     @State private var hasFollowed = false
+    /// The message the reader was on when they asked for the page above it,
+    /// held until that page has been laid out and can be scrolled past.
+    @State private var holdAnchor: String?
     @FocusState private var composerFocused: Bool
 
     public init(client: TesterChannelClient) {
@@ -68,6 +71,19 @@ public struct TesterChannelView: View {
         .onAppear {
             client.setVisible(true)
             nameDraft = client.tester?.suggestedName ?? ""
+        }
+        // The profile usually arrives *after* this view appears — the guide
+        // says to await identify before showing the panel, and the integration
+        // examples mount it and identify in a `.task` under it, which is the
+        // order most hosts end up with. Read once in `onAppear` the suggestion
+        // was therefore read before there was one, and `traits.name` — the
+        // whole point of which is that somebody happy with it agrees in one
+        // click — never reached the box.
+        //
+        // Only into an empty box: a suggestion is a starting point, not
+        // something to overwrite what somebody is halfway through typing.
+        .onChange(of: client.tester?.suggestedName) { suggestion in
+            if nameDraft.isEmpty, let suggestion { nameDraft = suggestion }
         }
         .onDisappear { client.setVisible(false) }
         .task { await client.refresh() }
@@ -247,6 +263,9 @@ public struct TesterChannelView: View {
             }
             .onChange(of: StreamTail(client)) { _ in follow(proxy) }
             .onChange(of: client.messages.count) { _ in
+                // After the view has taken the new messages, which is what the
+                // held anchor is waiting for.
+                if let anchor = holdAnchor { restore(anchor, proxy) }
                 Task { await client.markRead() }
             }
             .onAppear {
@@ -322,12 +341,40 @@ public struct TesterChannelView: View {
     /// The message that was first sits just under this button, so it goes back
     /// to the top.
     private func loadOlder(_ proxy: ScrollViewProxy) async {
-        let reading = client.messages.first?.id
+        guard let reading = client.messages.first?.id else { return }
+        // Handed to the stream's own change handler rather than scrolled to
+        // here. `DispatchQueue.main.async` from this method runs before the
+        // lazy stack has laid the prepended page out, so the proxy resolved the
+        // anchor against an estimate and landed a whole page above it — the
+        // reader asked for the page above and was sent to the top of it, which
+        // is the same rule broken in the other direction.
+        let before = client.messages.count
+        holdAnchor = reading
         await client.loadOlder()
-        guard let reading else { return }
-        // After the prepend has been laid out, not before it: scrolling to where
-        // the message was would put it back under the new page.
-        DispatchQueue.main.async { proxy.scrollTo(reading, anchor: .top) }
+        // Nothing arrived — the page was empty, or the request failed and the
+        // button stays for another try. Either way no layout change is coming
+        // to spend the anchor on, and an anchor left set would be spent by the
+        // next unrelated arrival instead, pulling the reader back to a message
+        // they may have scrolled a long way from.
+        if client.messages.count == before { holdAnchor = nil }
+    }
+
+    /// Put the reader back on the message they were reading, once the page
+    /// above it exists.
+    ///
+    /// Twice, and both passes earn their place. A `LazyVStack` has not measured
+    /// a row it has never shown, so the first call is what forces the anchor to
+    /// be built; the second, on the far side of that layout, is the one that
+    /// lands on it. Without animation, because this is meant to look like the
+    /// page was always there rather than like a journey.
+    private func restore(_ anchor: String, _ proxy: ScrollViewProxy) {
+        var instant = Transaction()
+        instant.disablesAnimations = true
+        withTransaction(instant) { proxy.scrollTo(anchor, anchor: .top) }
+        DispatchQueue.main.async {
+            withTransaction(instant) { proxy.scrollTo(anchor, anchor: .top) }
+            holdAnchor = nil
+        }
     }
 
     /// The way back through a thread that may be years long. In the stream

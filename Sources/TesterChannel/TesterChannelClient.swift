@@ -163,8 +163,22 @@ public final class TesterChannelClient: ObservableObject {
             ?? Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         if let shipped { body["build"] = shipped }
 
-        let res: IdentifyResponse = try await call(
-            "/client/identify", method: "POST", json: body, authenticated: false)
+        let res: IdentifyResponse
+        do {
+            res = try await call(
+                "/client/identify", method: "POST", json: body, authenticated: false)
+        } catch let e as TesterChannelError where e.isRemoved {
+            // D17 reaches the handshake too, and this is the only moment a
+            // removed tester learns it on a cold start: there is no stored
+            // session to be refused later, because identify is what mints one.
+            // Without this the panel came up with `isRemoved` false, drew a
+            // live composer over an empty thread, and queued whatever was typed
+            // into it against a session that does not exist — a promise of a
+            // retry that nothing would ever make, which is the failure the web
+            // client already has a note about.
+            isRemoved = true
+            throw e
+        }
 
         session = res.session
         app = res.app
@@ -308,6 +322,11 @@ public final class TesterChannelClient: ObservableObject {
         let trimmed = text.trimmed
         let ids = staged.map(\.id)
         guard !trimmed.isEmpty || !ids.isEmpty else { return }
+        // The error was about what is staged, so sending it is the answer to
+        // it. Left standing, "send these first" survived the send that did
+        // exactly that and stayed on screen with nothing staged, until the
+        // next upload happened to clear it.
+        uploadError = nil
         staged = []
         pending.append(PendingItem(kind: .message(text: text, attachmentIds: ids)))
         await flush()
@@ -404,6 +423,9 @@ public final class TesterChannelClient: ObservableObject {
 
     public func unstage(_ id: String) {
         staged.removeAll { $0.id == id }
+        // Un-staging is the other way out of "too many", so the complaint goes
+        // with the thing it was complaining about.
+        uploadError = nil
     }
 
     /// What the tester wants to be called. Theirs — nothing on the operator side
