@@ -17,7 +17,7 @@ https://github.com/mjhere/tester-channel-ios
 or in a `Package.swift` of your own:
 
 ```swift
-.package(url: "https://github.com/mjhere/tester-channel-ios", .upToNextMinor(from: "0.1.0"))
+.package(url: "https://github.com/mjhere/tester-channel-ios", .upToNextMinor(from: "0.1.1"))
 ```
 
 **`upToNextMinor` rather than Xcode's default while this is a 0.x release.**
